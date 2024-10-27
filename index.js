@@ -9,5 +9,5 @@ const WS_PORT = process.env.WS_PORT;
 httpServer.listen(HTTP_PORT);
 startWSserver(WS_PORT)
 
-console.log(`Static http server is running on the ${HTTP_PORT} port!`);
-console.log(`API server is running on the ${WS_PORT} port!`)
+console.log(`Static http server is running on the ${HTTP_PORT} port! Click to open: http://localhost:${HTTP_PORT}/`);
+console.log(`API server is running on the ${WS_PORT} port! ws://localhost:${WS_PORT}/`)
