@@ -21,5 +21,5 @@ export default {
   output: {
     filename: 'bundle.cjs',
     path: path.resolve('./dist'),
-  }
+  },
 };
