@@ -4,6 +4,7 @@ import { sendSocketMessage } from '../utils';
 import { clients } from '../state';
 import { registerPlayerHandler } from '../handlers/registration-handlers';
 import { createRoomHandler, addUserToRoomHandler } from '../handlers/room-handlers';
+import { addShipsHandler } from '../handlers/game-handlers';
 import { Command } from '../types';
 
 export const startWSserver = (port: string | number) => {
@@ -38,6 +39,10 @@ export const startWSserver = (port: string | number) => {
         }
         case 'add_user_to_room': {
           addUserToRoomHandler(socketId, parsedPayload);
+          break;
+        }
+        case 'add_ships': {
+          addShipsHandler(parsedPayload);
           break;
         }
         default: {

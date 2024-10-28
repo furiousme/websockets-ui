@@ -36,6 +36,29 @@ export const notifyPlayersAboutGameCreated = (game: Game) => {
   });
 };
 
+export const notifyPlayersAboutGameStarted = (game: Game) => {
+  game.gameUsers.forEach((user) => {
+    const client = clients.get(user.socketId);
+    const gameData = {
+      idGame: game.gameId,
+      ships: game.ships[user.idPlayer],
+    };
+
+    sendSocketMessage(client, Command.START_GAME, gameData);
+  });
+};
+
+export const notifyPlayersAboutCurrentTurn = (game: Game) => {
+  game.gameUsers.forEach((user) => {
+    const client = clients.get(user.socketId);
+    const gameData = {
+      currentPlayer: game.gameUsers.find((user) => user.index === game.turn)?.idPlayer,
+    };
+
+    sendSocketMessage(client, Command.TURN, gameData);
+  });
+};
+
 export const prepareAvailableRooms = (): RoomsForClient => {
   return Array.from(rooms.entries()).reduce((acc, [key, value]) => {
     if (value.available)

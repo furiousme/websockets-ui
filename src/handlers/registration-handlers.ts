@@ -11,7 +11,7 @@ export const registerPlayerHandler = (ws: FIXME, socketId: string, payload: FIXM
   const { name, password } = parsedData;
   const client = clients.get(socketId);
 
-  players.set(socketId, { name, password });
+  players.set(socketId, { name, password, socketId });
   const responseData = {
     name,
     index: socketId,
