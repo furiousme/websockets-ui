@@ -18,6 +18,19 @@ export const notifyClientsAboutWinnersUpdates = (recipients, winners) => {
   })
 }
 
+export const notifyPlayersAboutGameCreated = (game) => {
+  game.gameUsers.forEach((user) => {
+    const client = clients.get(user.socketId)
+    const gameData = {
+      idGame: game.gameId,
+      idPlayer: user.idPlayer
+    }
+
+    console.log(user.socketId, gameData)
+    sendSocketMessage(client, "create_game", gameData)
+  })
+}
+
 export const prepareAvailableRooms = (rooms) => {
   return Array.from(rooms.entries()).reduce((acc, [key, value]) => {
     if (value.available) acc.push({
