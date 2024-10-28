@@ -2,7 +2,7 @@ import path from 'node:path';
 import nodeExternals from 'webpack-node-externals';
 
 export default {
-  entry: './index.js',
+  entry: './src/index.ts',
   target: 'node',
   mode: 'production',
   externals: [nodeExternals()],

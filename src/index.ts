@@ -1,10 +1,11 @@
-import { httpServer } from './src/http_server/index.js';
-import { startWSserver } from './src/ws-server/index.js';
+import { httpServer } from './http_server';
+import { startWSserver } from './ws-server';
+import process from 'node:process';
 
 import 'dotenv/config';
 
-const HTTP_PORT = process.env.HTTP_PORT;
-const WS_PORT = process.env.WS_PORT;
+const HTTP_PORT = process.env.HTTP_PORT || 8181;
+const WS_PORT = process.env.WS_PORT || 3000;
 
 httpServer.listen(HTTP_PORT);
 startWSserver(WS_PORT);

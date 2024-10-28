@@ -1,6 +1,7 @@
-import { clients, rooms, players } from '../state/index.js';
+import { clients, rooms } from '../state';
+import { Command, FIXME, Game, RoomsForClient } from '../types';
 
-export const sendSocketMessage = (ws, type, data) => {
+export const sendSocketMessage = (ws: FIXME, type: Command, data: unknown) => {
   if (ws.readyState === ws.CLOSED) return;
   const message = JSON.stringify({
     type,
@@ -12,17 +13,17 @@ export const sendSocketMessage = (ws, type, data) => {
 
 export const notifyClientsAboutRoomUpdates = () => {
   clients.forEach((ws) => {
-    sendSocketMessage(ws, 'update_room', prepareAvailableRooms(rooms));
+    sendSocketMessage(ws, Command.UPDATE_ROOM, prepareAvailableRooms());
   });
 };
 
-export const notifyClientsAboutWinnersUpdates = (recipients, winners) => {
+export const notifyClientsAboutWinnersUpdates = (recipients: FIXME[]) => {
   recipients.forEach((ws) => {
-    sendSocketMessage(ws, 'update_winners', []);
+    sendSocketMessage(ws, Command.UPDATE_WINNERS, []);
   });
 };
 
-export const notifyPlayersAboutGameCreated = (game) => {
+export const notifyPlayersAboutGameCreated = (game: Game) => {
   game.gameUsers.forEach((user) => {
     const client = clients.get(user.socketId);
     const gameData = {
@@ -31,11 +32,11 @@ export const notifyPlayersAboutGameCreated = (game) => {
     };
 
     console.log(user.socketId, gameData);
-    sendSocketMessage(client, 'create_game', gameData);
+    sendSocketMessage(client, Command.CREATE_GAME, gameData);
   });
 };
 
-export const prepareAvailableRooms = (rooms) => {
+export const prepareAvailableRooms = (): RoomsForClient => {
   return Array.from(rooms.entries()).reduce((acc, [key, value]) => {
     if (value.available)
       acc.push({
@@ -43,5 +44,5 @@ export const prepareAvailableRooms = (rooms) => {
         roomUsers: value.roomUsers,
       });
     return acc;
-  }, []);
+  }, [] as RoomsForClient);
 };
