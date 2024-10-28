@@ -4,7 +4,7 @@ import { sendSocketMessage } from '../utils';
 import { clients } from '../state';
 import { registerPlayerHandler } from '../handlers/registration-handlers';
 import { createRoomHandler, addUserToRoomHandler } from '../handlers/room-handlers';
-import { addShipsHandler } from '../handlers/game-handlers';
+import { addShipsHandler, attackHandler } from '../handlers/game-handlers';
 import { Command } from '../types';
 
 export const startWSserver = (port: string | number) => {
@@ -29,20 +29,25 @@ export const startWSserver = (port: string | number) => {
       });
 
       switch (type) {
-        case 'reg': {
+        case Command.REG: {
           registerPlayerHandler(ws, socketId, parsedPayload);
           break;
         }
-        case 'create_room': {
+        case Command.CREATE_ROOM: {
           createRoomHandler(socketId);
           break;
         }
-        case 'add_user_to_room': {
+        case Command.ADD_USER_TO_ROOM: {
           addUserToRoomHandler(socketId, parsedPayload);
           break;
         }
-        case 'add_ships': {
+        case Command.ADD_SHIPS: {
           addShipsHandler(parsedPayload);
+          break;
+        }
+        case Command.RANDOM_ATTACK:
+        case Command.ATTACK: {
+          attackHandler(parsedPayload);
           break;
         }
         default: {

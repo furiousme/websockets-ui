@@ -16,6 +16,9 @@ export enum Command {
   CREATE_GAME = 'create_game',
   START_GAME = 'start_game',
   TURN = 'turn',
+  ATTACK = 'attack',
+  RANDOM_ATTACK = 'random_attack',
+  ADD_SHIPS = 'add_ships',
   UPDATE_WINNERS = 'update_winners',
   ERROR = 'error',
 }
@@ -36,7 +39,7 @@ export type Game = {
   gameId: string;
   gameUsers: GameUser[];
   started: boolean;
-  turn: number;
+  turn: string;
   ships: {
     [key: string]: [];
   };
@@ -67,3 +70,5 @@ export type RoomsForClient = {
   roomId: string;
   roomUsers: RoomUser[];
 }[];
+
+export type AttackStatus = 'miss' | 'killed' | 'shot';

@@ -1,5 +1,5 @@
 import { clients, rooms } from '../state';
-import { Command, FIXME, Game, RoomsForClient } from '../types';
+import { AttackStatus, Command, FIXME, Game, RoomsForClient, Ship } from '../types';
 
 export const sendSocketMessage = (ws: FIXME, type: Command, data: unknown) => {
   if (ws.readyState === ws.CLOSED) return;
@@ -48,11 +48,29 @@ export const notifyPlayersAboutGameStarted = (game: Game) => {
   });
 };
 
+export const notifyPlayersAboutAttackFeedback = (
+  game: Game,
+  currentPlayer: string,
+  status: AttackStatus,
+  position: { x: number; y: number }
+) => {
+  game.gameUsers.forEach((user) => {
+    const client = clients.get(user.socketId);
+    const gameData = {
+      currentPlayer,
+      status,
+      position,
+    };
+
+    sendSocketMessage(client, Command.ATTACK, gameData);
+  });
+};
+
 export const notifyPlayersAboutCurrentTurn = (game: Game) => {
   game.gameUsers.forEach((user) => {
     const client = clients.get(user.socketId);
     const gameData = {
-      currentPlayer: game.gameUsers.find((user) => user.index === game.turn)?.idPlayer,
+      currentPlayer: game.turn,
     };
 
     sendSocketMessage(client, Command.TURN, gameData);
@@ -68,4 +86,23 @@ export const prepareAvailableRooms = (): RoomsForClient => {
       });
     return acc;
   }, [] as RoomsForClient);
+};
+
+export const checkForHit = (ships: Ship[], position: { x: number; y: number }) => {
+  return ships.some((ship) => {
+    const { direction, length } = ship;
+    if (!direction) {
+      return (
+        position.x === ship.position.x &&
+        position.y >= ship.position.y &&
+        position.y < ship.position.y + length
+      );
+    } else {
+      return (
+        position.y === ship.position.y &&
+        position.x >= ship.position.x &&
+        position.x < ship.position.x + length
+      );
+    }
+  });
 };

@@ -35,7 +35,7 @@ export const addUserToRoomHandler = (socketId: string, payload: FIXME) => {
       gameId: newGameId,
       started: false,
       ships: {},
-      turn: 0,
+      turn: '',
       gameUsers: room.roomUsers.map((user: RoomUser) => {
         return {
           socketId: user.socketId,
