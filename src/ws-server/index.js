@@ -1,10 +1,7 @@
 import { WebSocketServer } from 'ws';
 import {v4 as uuidv4} from 'uuid'
 import {sendSocketMessage, notifyClientsAboutRoomUpdates, notifyClientsAboutWinnersUpdates} from "../utils/index.js";
-
-const clients = new Map() 
-const players = new Map()
-
+import {clients, players, rooms } from "../state/index.js";
 
 export const startWSserver = (port) => {
     const ws = new WebSocketServer({ port });
@@ -27,6 +24,7 @@ export const startWSserver = (port) => {
               case "reg": {      
                 const parsedData = JSON.parse(parsedPayload.data)
                 const {name, password} = parsedData;
+                const client = clients.get(socketId)
                 players.set(socketId, {name, password})
                 const responseData = {
                     name,
@@ -35,8 +33,27 @@ export const startWSserver = (port) => {
                     errorText: "",
                 }
                 sendSocketMessage(ws, "reg", responseData)
-                notifyClientsAboutRoomUpdates(clients)
-                notifyClientsAboutWinnersUpdates(clients)
+                notifyClientsAboutRoomUpdates()
+                notifyClientsAboutWinnersUpdates([client])
+                break;
+              }
+              case "create_room": {
+                const player = players.get(socketId)
+                rooms.set(socketId, {id: socketId, roomUsers: [{ name: player.name, index: 0 }], available: true})
+                notifyClientsAboutRoomUpdates()
+                break;
+              }
+              case "add_user_to_room": {
+                const parsedData = JSON.parse(parsedPayload.data)
+                const {indexRoom} = parsedData;
+                const player = players.get(socketId)
+                const room = rooms.get(indexRoom)
+                if (!room.roomUsers.some((user) => user.name === player.name)) {
+                  room.roomUsers.push({ name: player.name, index: 1 })
+                  room.available = false;
+                  rooms.set(indexRoom, room)
+                }
+                notifyClientsAboutRoomUpdates()
                 break;
               }
               default: {
